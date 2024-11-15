@@ -10,10 +10,7 @@ defmodule Chesster.Application do
     children = [
       ChessterWeb.Telemetry,
       Chesster.Repo,
-      {DNSCluster, query: Application.get_env(:chesster, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Chesster.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: Chesster.Finch},
       # Start a worker by calling: Chesster.Worker.start_link(arg)
       # {Chesster.Worker, arg},
       # Start to serve requests, typically the last entry
