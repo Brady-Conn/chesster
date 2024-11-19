@@ -7,7 +7,7 @@ defmodule Chesster.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Chesster.StockFish,  "_build/dev/lib/chesster/priv/stockfish/src/stockfish"},
+      {Chesster.StockFish,  "_build/dev/lib/chesster/priv/stockfish/src/stockfish"}, #only for testing, parent process will handle this
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
