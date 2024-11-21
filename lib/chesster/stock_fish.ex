@@ -66,7 +66,7 @@ defmodule Chesster.StockFish do
 
   def handle_info({_port, {:data, data}}, state) do
     IO.inspect(data)
-    regex = ~r/bestmove (\w+)/
+    regex = ~r/bestmove .+/
     is_best_move = Regex.match?(regex, data)
     if is_best_move do
       config = Application.get_env(:chesster, :config) || %{on_move: fn _d -> nil end}
