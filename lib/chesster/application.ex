@@ -7,6 +7,7 @@ defmodule Chesster.Application do
   @impl true
   def start(_type, _args) do
     children = [
+      {Chesster.InitEngine,  "_build/dev/lib/chesster/priv/stockfish/src"},
       {Chesster.StockFish,  "_build/dev/lib/chesster/priv/stockfish/src/stockfish"}, #only for testing, parent process will handle this
     ]
 
