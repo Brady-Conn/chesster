@@ -27,5 +27,4 @@
     - src files aren't that large so they can go to github, just need to figure out how to ignore the compiled files
     - look into having the app download the src files, that would solve the gitignore issue and provide latest version of engine
   - figure out hex publishing
-  - expose elo settings for stockfish
 

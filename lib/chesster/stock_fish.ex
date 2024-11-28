@@ -13,6 +13,10 @@ defmodule Chesster.StockFish do
     GenServer.cast(__MODULE__, {:send_move, new_position})
   end
 
+  def set_elo(elo) do
+    GenServer.cast(__MODULE__, {:set_elo, elo})
+  end
+
   def shutdown() do
     GenServer.call(__MODULE__, :shutdown)
   end
@@ -44,6 +48,12 @@ defmodule Chesster.StockFish do
     {:stop, :normal, state}
   end
 
+  def handle_call(:set_elo, _from, state) do
+    Port.command(state.port, "setoption name UCI_Elo value #{state.elo}\n")
+    {:reply, :ok, state}
+
+  end
+
   def handle_info({_port, {:data, data}}, state) do
     best_move_regex = ~r/^bestmove/
     initialize_regex = ~r/^Stockfish \d\d by the Stockfish developers/
@@ -60,7 +70,8 @@ defmodule Chesster.StockFish do
         state = Map.put(state, :uci_init, true)
         {:noreply, state}
       data =~ uci_regex ->
-        IO.inspect("uciok")
+        IO.inspect("uciok, setting UCI_LimitStrength to true and starting a new game")
+        Port.command(state.port, "setoption name UCI_LimitStrength value true\n")
         Port.command(state.port, "ucinewgame\n")
         {:noreply, state, {:continue, :is_ready}}
       data =~ ready_regex ->
