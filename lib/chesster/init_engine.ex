@@ -8,9 +8,12 @@ defmodule Chesster.InitEngine do
   def run(arg) do
     # check for stockfish otherwise build with make
     if File.exists?("#{arg}/stockfish") do
+      IO.puts("stockfish already built")
       :ok
     else
-      System.cmd("make", ["-j", "build"], cd: arg)
+      IO.puts("building stockfish")
+      cpu = System.get_env("CPU") || "apple-silicon"
+      System.cmd("make", ["-j", "build", "ARCH=#{cpu}"], cd: arg)
     end
   end
 end
