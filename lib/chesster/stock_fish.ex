@@ -39,6 +39,7 @@ defmodule Chesster.StockFish do
   end
 
   def handle_call(:shutdown, _from, state) do
+    Port.command(state.port, "quit\n")
     Port.close(state.port)
     {:stop, :normal, state}
   end
