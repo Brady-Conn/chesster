@@ -44,35 +44,31 @@ defmodule Chesster.StockFish do
     {:stop, :normal, state}
   end
 
-  def handle_info({_port, {:data, "id name Stockfish 17\nid author the Stockfish developers (see AUTHORS file)\n\noption name Debug Log File type string default <empty>\noption name NumaPolicy type string default auto\noption name Threads type spin default 1 min 1 max 1024\noption name Hash type spin default 16 min 1 max 33554432\noption name Clear Hash type button\noption name Ponder type check default false\noption name MultiPV type spin default 1 min 1 max 256\noption name Skill Level type spin default 20 min 0 max 20\noption name Move Overhead type spin default 10 min 0 max 5000\noption name nodestime type spin default 0 min 0 max 10000\noption name UCI_Chess960 type check default false\noption name UCI_LimitStrength type check default false\noption name UCI_Elo type spin default 1320 min 1320 max 3190\noption name UCI_ShowWDL type check default false\noption name SyzygyPath type string default <empty>\noption name SyzygyProbeDepth type spin default 1 min 1 max 100\noption name Syzygy50MoveRule type check default true\noption name SyzygyProbeLimit type spin default 7 min 0 max 7\noption name EvalFile type string default nn-1111cefa1111.nnue\noption name EvalFileSmall type string default nn-37f18f62d772.nnue\nuciok\n"}}, state) do
-    IO.inspect("uciok")
-    Port.command(state.port, "ucinewgame\n")
-    {:noreply, state, {:continue, :is_ready}}
-  end
-
-  def handle_info({_port, {:data, "Stockfish 17 by the Stockfish developers (see AUTHORS file)\n"}}, state) do
-    IO.inspect("stockfish 17")
-    if !state.uci_init do
-      Port.command(state.port, "uci\n")
-      state = Map.put(state, :uci_init, true)
-      {:noreply, state}
-    end
-    {:noreply, state}
-  end
-
-  def handle_info({_port, {:data, "readyok\n"}}, state) do
-    IO.inspect("readyok")
-    {:noreply, state}
-  end
-
   def handle_info({_port, {:data, data}}, state) do
-    IO.inspect(data)
-    regex = ~r/bestmove .+/
-    is_best_move = Regex.match?(regex, data)
-    if is_best_move do
-      config = Application.get_env(:chesster, :config) || %{on_move: fn _d -> nil end}
-      config.on_move(data)
+    best_move_regex = ~r/^bestmove/
+    initialize_regex = ~r/^Stockfish \d\d by the Stockfish developers/
+    uci_regex = ~r/^id name Stockfish \d\d/
+    ready_regex = ~r/^readyok/
+    cond do
+      data =~ best_move_regex ->
+        config = Application.get_env(:chesster, :config) || %{:on_move => fn _d -> nil end}
+        config.on_move(data)
+        {:noreply, state}
+      data =~ initialize_regex ->
+        IO.inspect(data)
+        Port.command(state.port, "uci\n")
+        state = Map.put(state, :uci_init, true)
+        {:noreply, state}
+      data =~ uci_regex ->
+        IO.inspect("uciok")
+        Port.command(state.port, "ucinewgame\n")
+        {:noreply, state, {:continue, :is_ready}}
+      data =~ ready_regex ->
+        IO.inspect("readyok")
+        {:noreply, state}
+      true ->
+        IO.inspect(data)
+        {:noreply, state}
     end
-    {:noreply, state}
   end
 end

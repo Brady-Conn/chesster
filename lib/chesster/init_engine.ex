@@ -12,8 +12,8 @@ defmodule Chesster.InitEngine do
       :ok
     else
       IO.puts("building stockfish")
-      cpu = System.get_env("CPU") || "apple-silicon"
-      System.cmd("make", ["-j", "build", "ARCH=#{cpu}"], cd: arg)
+      config = Application.get_env(:chesster, :config) || %{ :cpu => "apple-silicon"}
+      System.cmd("make", ["-j", "build", "ARCH=#{config.cpu}"], cd: arg)
     end
   end
 end

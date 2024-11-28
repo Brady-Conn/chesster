@@ -28,5 +28,4 @@
     - look into having the app download the src files, that would solve the gitignore issue and provide latest version of engine
   - figure out hex publishing
   - expose elo settings for stockfish
-  - clean up handle_info functions
 
