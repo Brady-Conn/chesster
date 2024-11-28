@@ -1,6 +1,6 @@
 # Chesster
-    An Elixir wrapper for the stockfish chess engine.
-      - Stockfish source code: [github](https://github.com/official-stockfish/Stockfish)
+  An Elixir wrapper for the stockfish chess engine.
+    - Stockfish source code: [github](https://github.com/official-stockfish/Stockfish)
 
 # Usage
 
